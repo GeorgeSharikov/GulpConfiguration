@@ -1,9 +1,8 @@
-
 const {src, dest, parallel, series, watch} = require('gulp')
 const browserSync = require('browser-sync').create()
 const ugify = require('gulp-uglify-es').default
 const concat = require('gulp-concat')
-const sass = require('gulp-sass')
+const sass = require('gulp-dart-sass')
 const autoprefixer = require('gulp-autoprefixer')
 const cleancss = require('gulp-clean-css')
 const imagemin = require('gulp-imagemin');
@@ -27,7 +26,7 @@ function html(){
 }
 
 function scripts(){
-	return src(['node_modules/jquery/dist/jquery.min.js', 'app/js/app.js'])
+	return src('app/js/app.js')
 	.pipe(dest('dist/js'))
 	.pipe(concat('app.min.js'))
 	.pipe(ugify())
@@ -38,6 +37,16 @@ function scripts(){
 function styles(){
 	return src([`app/sass/main.sass`])
 	.pipe(sass())
+	.pipe(dest('dist/sass/'))
+	.pipe(concat('app.min.css'))
+	.pipe(autoprefixer({ overrideBrowserslist: ['last 10 versions'], grid: true }))
+	.pipe(cleancss({ level: { 1: { specialComments: 0 } }}))
+	.pipe(dest('dist/sass/'))
+	.pipe(browserSync.stream())
+}
+
+function stylesCss(){
+	return src([`app/css/main.css`])
 	.pipe(dest('dist/css/'))
 	.pipe(concat('app.min.css'))
 	.pipe(autoprefixer({ overrideBrowserslist: ['last 10 versions'], grid: true }))
@@ -58,6 +67,7 @@ function startWatch(){
 	watch('app/sass/**/*.sass', styles)
 	watch('app/**/*.html', html)
 	watch('app/img/src/**/*', images)
+    watch(['app/css/**/*', '!app/css/**/_*.css'], stylesCss)
 }
 
 function cleanImg(){
@@ -77,7 +87,8 @@ function build(){
 	.pipe(dest('dist'))
 }
 
-exports.build = series(cleanDist, styles, scripts, html, images, build)
+exports.build = series(cleanDist, styles,stylesCss, scripts, html, images, build)
+exports.stylesCss = stylesCss
 exports.cleanDist = cleanDist
 exports.cleanImg = cleanImg
 exports.images = images
@@ -85,4 +96,4 @@ exports.styles = styles
 exports.html = html
 exports.browserSyncFn = browserSyncFn
 exports.scripts = scripts
-exports.default = parallel( html,scripts, browserSyncFn, startWatch)
+exports.default = parallel( html, scripts, styles, stylesCss, browserSyncFn, startWatch)
