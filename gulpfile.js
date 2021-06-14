@@ -56,17 +56,17 @@ function stylesCss(){
 }
 
 function images(){
-	return src('app/img/src/**/*')
-	.pipe(newer('app/img/dest/'))
+	return src('app/img/**/*')
+	.pipe(newer('app/img/'))
 	.pipe(imagemin())
-	.pipe(dest('dist/img/dest'))
+	.pipe(dest('dist/img/'))
 }
 
 function startWatch(){
 	watch(['app/js/**/*.js', '!app/js/**/*.min.js'], scripts)
 	watch('app/sass/**/*.sass', styles)
 	watch('app/**/*.html', html)
-	watch('app/img/src/**/*', images)
+	watch('app/img/**/*', images)
     watch(['app/css/**/*', '!app/css/**/_*.css'], stylesCss)
 }
 
@@ -82,12 +82,12 @@ function build(){
 	return src([
 		'app/css/**/*.css',
 		'app/js/**/*.js',
-		'app/img/dest/**/*'
+		'app/img/**/*'
 	], {base: 'app'})
-	.pipe(dest('dist'))
+	.pipe(dest('dist/'))
 }
 
-exports.build = series(cleanDist, styles,stylesCss, scripts, html, images, build)
+exports.build = series(cleanDist, images, styles,stylesCss, scripts, html, build)
 exports.stylesCss = stylesCss
 exports.cleanDist = cleanDist
 exports.cleanImg = cleanImg
