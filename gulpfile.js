@@ -41,19 +41,10 @@ function styles(){
 	.pipe(concat('app.min.css'))
 	.pipe(autoprefixer({ overrideBrowserslist: ['last 10 versions'], grid: true }))
 	.pipe(cleancss({ level: { 1: { specialComments: 0 } }}))
-	.pipe(dest('dist/sass/'))
+	.pipe(dest('dist/css/'))
 	.pipe(browserSync.stream())
 }
 
-function stylesCss(){
-	return src([`app/css/main.css`])
-	.pipe(dest('dist/css/'))
-	.pipe(concat('app.min.css'))
-	.pipe(autoprefixer({ overrideBrowserslist: ['last 10 versions'], grid: true }))
-	.pipe(cleancss({ level: { 1: { specialComments: 0 } }}))
-	.pipe(dest('dist/css/'))
-	.pipe(browserSync.stream())
-}
 
 function images(){
 	return src('app/img/**/*')
@@ -67,7 +58,6 @@ function startWatch(){
 	watch('app/sass/**/*.sass', styles)
 	watch('app/**/*.html', html)
 	watch('app/img/**/*', images)
-    watch(['app/css/**/*', '!app/css/**/_*.css'], stylesCss)
 }
 
 function cleanImg(){
@@ -87,8 +77,7 @@ function build(){
 	.pipe(dest('dist/'))
 }
 
-exports.build = series(cleanDist, images, styles,stylesCss, scripts, html, build)
-exports.stylesCss = stylesCss
+exports.build = series(cleanDist, images, styles, scripts, html, build)
 exports.cleanDist = cleanDist
 exports.cleanImg = cleanImg
 exports.images = images
@@ -96,4 +85,4 @@ exports.styles = styles
 exports.html = html
 exports.browserSyncFn = browserSyncFn
 exports.scripts = scripts
-exports.default = parallel( html, scripts, styles, stylesCss, browserSyncFn, startWatch)
+exports.default = parallel( html, scripts, styles, browserSyncFn, startWatch)
