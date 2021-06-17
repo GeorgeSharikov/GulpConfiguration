@@ -46,6 +46,11 @@ function styles(){
 }
 
 
+function fonts(){
+	return src('./app/fonts/**/*.{eot,svg,ttf,woff,woff2}') 
+	.pipe(dest('./dist/fonts/'))
+}
+
 function images(){
 	return src('app/img/**/*')
 	.pipe(newer('app/img/'))
@@ -77,7 +82,8 @@ function build(){
 	.pipe(dest('dist/'))
 }
 
-exports.build = series(cleanDist, images, styles, scripts, html, build)
+exports.build = series(cleanDist, images, styles, fonts, scripts, html, build)
+exports.fonts = fonts
 exports.cleanDist = cleanDist
 exports.cleanImg = cleanImg
 exports.images = images
@@ -85,4 +91,4 @@ exports.styles = styles
 exports.html = html
 exports.browserSyncFn = browserSyncFn
 exports.scripts = scripts
-exports.default = parallel( html, scripts, styles, browserSyncFn, startWatch)
+exports.default = parallel( html, scripts, styles, fonts, browserSyncFn, startWatch)
